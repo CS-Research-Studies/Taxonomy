@@ -1,0 +1,25 @@
+const pilot studyRules = {
+
+pilot study_rules: [
+
+          'their pilot study' ,
+          'recent pilot study' ,
+          'conducted a pilot study' ,
+          'each pilot study' ,
+          'a pilot study' ,
+          'our pilot study' ,
+          'conducted pilot study' ,
+          'pilot study sessions' ,
+          'because pilot study participants' ,
+          'from the pilot study' ,
+          'demographics pilot study' ,
+          'pilot study procedure' ,
+          'pilot study comparing' ,
+          'pilot study using' ,
+          'prospective pilot study' ,
+          'pilot study data' ,
+          'small pilot study' ,
+          'pilot study questions' ,
+          'this pilot study led' ,
+          'in the pilot study' ,
+],};

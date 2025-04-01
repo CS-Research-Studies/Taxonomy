@@ -1,0 +1,24 @@
+const evaluativeRules = {
+
+evaluative_rules: [
+
+          'their evaluative measures' ,
+          'purely evaluative' ,
+          'this evaluative criterion' ,
+          'evaluative capacity' ,
+          'evaluative summaries' ,
+          'evaluative discrepancies' ,
+          'evaluative studies' ,
+          'evaluative research' ,
+          'final evaluative step' ,
+          'current evaluative criteria' ,
+          'context evaluative questions' ,
+          'evaluative tools' ,
+          'additional evaluative layers' ,
+          'qualify evaluative judgements' ,
+          'collected evaluative data' ,
+          'evaluative aspects' ,
+          'evaluative work' ,
+          'real-time evaluative feedback' ,
+          'complex evaluative sensemaking' ,
+],};

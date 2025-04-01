@@ -1,0 +1,6 @@
+const instrument applicationRules = {
+
+instrument application_rules: [
+
+          'can instrument application programming' ,
+],};

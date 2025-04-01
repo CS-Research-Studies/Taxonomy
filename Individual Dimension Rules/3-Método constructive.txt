@@ -1,0 +1,31 @@
+const constructiveRules = {
+
+constructive_rules: [
+
+          'constructive behavior' ,
+          'contextual constructive approach' ,
+          'prove constructive lower' ,
+          'constructive approaches' ,
+          'constructive criticism' ,
+          'facilitating constructive iterative' ,
+          'constructive dialogue' ,
+          'constructive impact' ,
+          'constructive agenda' ,
+          'constructive work' ,
+          'constructive hypothesis' ,
+          'constructive terms' ,
+          'constructive term' ,
+          'provides constructive algorithms' ,
+          'constructive heuristic' ,
+          'constructive interference' ,
+          'constructive models' ,
+          'constructive proof' ,
+          'constructive proofs' ,
+          'constructive technological' ,
+          'constructive control' ,
+          'constructive manipulation' ,
+          'introduction constructive type' ,
+          'yield constructive solutions' ,
+          'constructive debate' ,
+          'provide constructive opportunities' ,
+],};

@@ -1,0 +1,9 @@
+const community researchRules = {
+
+community research_rules: [
+
+          'all community research projects' ,
+          'doing community research without' ,
+          'our community research partner' ,
+          'hacker community research as' ,
+],};

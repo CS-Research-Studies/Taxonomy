@@ -1,0 +1,9 @@
+const process analysisRules = {
+
+process analysis_rules: [
+
+          'production process analysis for' ,
+          'subsequent process analysis' ,
+          'interaction process analysis' ,
+          'gaussian process analysis algorithm' ,
+],};

@@ -1,0 +1,14 @@
+const historicRules = {
+
+historic_rules: [
+
+          'historic views' ,
+          'historic data' ,
+          'adapting historic perspectives' ,
+          'historic mediation data' ,
+          'wider historic trajectory' ,
+          'relation historic seismic' ,
+          'categorize historic approaches' ,
+          'like historic weather' ,
+          'their historic relationship' ,
+],};

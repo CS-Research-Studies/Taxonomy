@@ -1,0 +1,15 @@
+const action researchRules = {
+
+action research_rules: [
+
+          'in action research' ,
+          'of action research directly' ,
+          'participatory action research' ,
+          'social action research methods' ,
+          'action research techniques' ,
+          'the action research orientation' ,
+          'ethnographic action research' ,
+          'hci   action research aims' ,
+          'study action research' ,
+          'human action research has' ,
+],};

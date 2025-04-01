@@ -1,0 +1,23 @@
+const cross-sectionalRules = {
+
+cross-sectional_rules: [
+
+          'with cross-sectional regression' ,
+          'time cross-sectional longitud' ,
+          'fixed cross-sectional area' ,
+          'ary cross-sectional depends' ,
+          'cross-sectional view' ,
+          'cross-sectional survey' ,
+          'cross-sectional thicknesses' ,
+          'other cross-sectional study' ,
+          'extensive cross-sectional research' ,
+          'both cross-sectional and' ,
+          'the cross-sectional qualitative' ,
+          'that cross-sectional analysis' ,
+          'in cross-sectional studies' ,
+          'on cross-sectional surveys' ,
+          'a cross-sectional case' ,
+          'and cross-sectional approaches' ,
+          'often cross-sectional in' ,
+          'be cross-sectional than' ,
+],};

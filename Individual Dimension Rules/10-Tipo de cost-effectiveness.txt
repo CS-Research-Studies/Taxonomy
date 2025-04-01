@@ -1,0 +1,20 @@
+const cost-effectivenessRules = {
+
+cost-effectiveness_rules: [
+
+          'the cost-effectiveness of' ,
+          'maximizing cost-effectiveness within' ,
+          'and cost-effectiveness for' ,
+          'cost-effectiveness improvement' ,
+          'optimal cost-effectiveness tradeoff' ,
+          'serious cost-effectiveness and' ,
+          'better cost-effectiveness (than' ,
+          'compelling cost-effectiveness' ,
+          'variable cost-effectiveness tradeoffs' ,
+          'greater cost-effectiveness against' ,
+          'substantial cost-effectiveness advantages' ,
+          'overall cost-effectiveness would' ,
+          'baseline cost-effectiveness was' ,
+          'satisfactory cost-effectiveness' ,
+          'our cost-effectiveness assessment' ,
+],};

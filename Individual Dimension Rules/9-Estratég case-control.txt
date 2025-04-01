@@ -1,0 +1,8 @@
+const case-controlRules = {
+
+case-control_rules: [
+
+          'a case-control study' ,
+          'case-control might' ,
+          'case-control design' ,
+],};

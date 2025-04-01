@@ -1,0 +1,6 @@
+const problem-orientedRules = {
+
+problem-oriented_rules: [
+
+          'problem-oriented solutions' ,
+],};

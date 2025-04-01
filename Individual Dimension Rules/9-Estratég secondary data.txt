@@ -1,0 +1,14 @@
+const secondary dataRules = {
+
+secondary data_rules: [
+
+          'secondary data deduplication' ,
+          'secondary data included' ,
+          'with secondary data sources ' ,
+          'secondary data use' ,
+          'our secondary data' ,
+          'using secondary data in' ,
+          'the secondary data source' ,
+          'this secondary data analysis' ,
+          'as secondary data collection' ,
+],};

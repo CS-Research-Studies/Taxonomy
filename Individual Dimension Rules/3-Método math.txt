@@ -1,0 +1,29 @@
+const mathRules = {
+
+math_rules: [
+
+          'via math into' ,
+          'math errors' ,
+          'computer-based math game' ,
+          'gpu math expression' ,
+          'posit math libraries' ,
+          'float math ies' ,
+          'our math task' ,
+          'math   apache' ,
+          'fortran math processing' ,
+          'macro math macro' ,
+          'pingpong math geometry' ,
+          'floating point math' ,
+          'sat math 750' ,
+          'a math task' ,
+          'math operations' ,
+          'double math library' ,
+          'appl math' ,
+          'mpfr math library' ,
+          'example math routines' ,
+          'with math act' ,
+          'intel math kernel' ,
+          'math   coding' ,
+          'floating-point math (the' ,
+          'rounded math libraries' ,
+],};

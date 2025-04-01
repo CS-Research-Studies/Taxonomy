@@ -1,0 +1,14 @@
+const operationalizationRules = {
+
+operationalization_rules: [
+
+          'encourage operationalization through' ,
+          'the operationalization described' ,
+          'its operationalization according' ,
+          'this operationalization is' ,
+          'and operationalization need' ,
+          'specific operationalization that' ,
+          'operationalization decisions' ,
+          'an operationalization of' ,
+          'diferent operationalization for' ,
+],};

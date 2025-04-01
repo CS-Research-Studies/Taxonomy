@@ -1,0 +1,14 @@
+const cause-and-effectRules = {
+
+cause-and-effect_rules: [
+
+          'useful cause-and-effect relationships' ,
+          'not cause-and-effect relationship' ,
+          'cause-and-effect relationships' ,
+          'one-step cause-and-effect' ,
+          'understood cause-and-effect with' ,
+          'understand cause-and-effect' ,
+          'of cause-and-effect to' ,
+          'individual cause-and-effect relationships' ,
+          'cause-and-effect relationships' ,
+],};

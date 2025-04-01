@@ -1,0 +1,8 @@
+const conceptual analysisRules = {
+
+conceptual analysis_rules: [
+
+          'critique conceptual analysis analyzing' ,
+          'a conceptual analysis and' ,
+          'our conceptual analysis of' ,
+],};

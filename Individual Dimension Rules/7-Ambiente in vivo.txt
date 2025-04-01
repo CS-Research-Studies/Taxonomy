@@ -1,0 +1,18 @@
+const in vivoRules = {
+
+in vivo_rules: [
+
+          'though in vivo codes' ,
+          'in vivo spam' ,
+          'in vivo process' ,
+          'capture in vivo measurements' ,
+          'the in vivo feasibility' ,
+          'conducted in vivo open' ,
+          'chronic in vivo recording' ,
+          'neurons in vivo from' ,
+          'in vivo code' ,
+          'in vivo category' ,
+          'in vivo characterization ' ,
+          'and in vivo coding' ,
+          'analyzed in vivo using' ,
+],};

@@ -1,0 +1,14 @@
+const meta-analysisRules = {
+
+meta-analysis_rules: [
+
+          'meta-analysis extracts' ,
+          'a meta-analysis of' ,
+          'quantitative meta-analysis found' ,
+          'meta-analysis comparing' ,
+          'online meta-analysis whose' ,
+          'this meta-analysis suggests' ,
+          'offline meta-analysis can' ,
+          'meta-analysis dates' ,
+          'theory meta-analysis' ,
+],};

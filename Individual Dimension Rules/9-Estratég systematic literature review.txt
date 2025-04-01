@@ -1,0 +1,11 @@
+const systematic literature reviewRules = {
+
+systematic literature review_rules: [
+
+          'the systematic literature review process' ,
+          'group systematic literature review' ,
+          'our systematic literature review we' ,
+          'systematic literature review to' ,
+          'this systematic literature review consisted' ,
+          'every systematic literature review should' ,
+],};

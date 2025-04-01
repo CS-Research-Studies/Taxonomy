@@ -1,0 +1,8 @@
+const speech analysisRules = {
+
+speech analysis_rules: [
+
+          'speech analysis algorithms' ,
+          'speech analysis for' ,
+          'via speech analysis' ,
+],};

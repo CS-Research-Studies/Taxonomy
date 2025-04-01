@@ -1,0 +1,6 @@
+const hermeneuticsRules = {
+
+hermeneutics_rules: [
+
+          'theory hermeneutics instrument' ,
+],};

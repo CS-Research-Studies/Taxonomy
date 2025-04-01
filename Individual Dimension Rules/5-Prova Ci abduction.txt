@@ -1,0 +1,19 @@
+const abductionRules = {
+
+abduction_rules: [
+
+          'shoulder abduction loading' ,
+          'use abduction' ,
+          'using abduction gram' ,
+          'equality abduction' ,
+          'of abduction from' ,
+          'abduction refers' ,
+          'logical abduction question' ,
+          'abduction of' ,
+          'this abduction judgement' ,
+          'when abduction fails' ,
+          'abduction is' ,
+          'horn abduction' ,
+          'constraint abduction procedure' ,
+          'your abduction' ,
+],};

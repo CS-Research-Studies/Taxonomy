@@ -1,0 +1,10 @@
+const phenomenologyRules = {
+
+phenomenology_rules: [
+
+          'than phenomenology' ,
+          'of phenomenology to' ,
+          'in phenomenology' ,
+          'the phenomenology of' ,
+          'analysis phenomenology simulation' ,
+],};

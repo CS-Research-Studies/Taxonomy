@@ -1,0 +1,10 @@
+const empiricRules = {
+
+empiric_rules: [
+
+          'how empiric could' ,
+          'of empiric over' ,
+          'the empiric calculation' ,
+          'primitive empiric that' ,
+          'empiric parameters' ,
+],};

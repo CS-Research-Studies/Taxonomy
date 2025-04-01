@@ -1,0 +1,18 @@
+const deductionRules = {
+
+deduction_rules: [
+
+          'their deduction rule' ,
+          'the deduction of' ,
+          'such deduction' ,
+          'deduction within' ,
+          'logical deduction to' ,
+          'to deduction from' ,
+          'for deduction' ,
+          'detailed deduction' ,
+          'of deduction rules' ,
+          'with deduction tomated' ,
+          'our deduction engine' ,
+          'deduction strategy' ,
+          'accuracy deduction on' ,
+],};

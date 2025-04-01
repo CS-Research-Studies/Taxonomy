@@ -1,0 +1,8 @@
+const in vitroRules = {
+
+in vitro_rules: [
+
+          'from in vitro to' ,
+          'the in vitro benchmarks' ,
+          'example in vitro' ,
+],};

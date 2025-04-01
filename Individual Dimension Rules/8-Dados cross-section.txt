@@ -1,0 +1,15 @@
+const cross-sectionRules = {
+
+cross-section_rules: [
+
+          'cross-section deformation' ,
+          'cross-section dimensions' ,
+          'the cross-section varies' ,
+          'adjusted cross-section has' ,
+          'any cross-section shape' ,
+          'cross-section shape' ,
+          'cross-section construction' ,
+          'horizontal cross-section' ,
+          'planar cross-section' ,
+          'sensor cross-section skin' ,
+],};

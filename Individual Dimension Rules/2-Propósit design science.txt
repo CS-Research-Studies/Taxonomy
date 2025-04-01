@@ -1,0 +1,15 @@
+const design scienceRules = {
+
+design science_rules: [
+
+          'for design science research' ,
+          'a design science paradigm' ,
+          'task design science effect' ,
+          'design science approach' ,
+          'using design science' ,
+          'of design science and' ,
+          'into design science efforts' ,
+          'following design science' ,
+          'design science methodology' ,
+          'design science research' ,
+],};

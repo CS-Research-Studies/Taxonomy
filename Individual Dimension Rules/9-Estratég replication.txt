@@ -1,0 +1,30 @@
+const replicationRules = {
+
+replication_rules: [
+
+          'replication testing' ,
+          'inconsistent replication' ,
+          'theoretical replication strategy' ,
+          'publishing replication can' ,
+          'poor replication validity' ,
+          'earlier replication research' ,
+          'advancing replication by' ,
+          'implies replication rather' ,
+          'replication studies' ,
+          'replication transactional' ,
+          'replication protocol' ,
+          'study replication' ,
+          'machine replication for' ,
+          'simulation replication from' ,
+          'update replication metrics' ,
+          'a replication factor' ,
+          'replication files' ,
+          'direct replication of' ,
+          'consistency replication protocols' ,
+          'replication level' ,
+          'during replication' ,
+          'verified replication protocols' ,
+          'support replication studies' ,
+          'replication study' ,
+          'replication study' ,
+],};

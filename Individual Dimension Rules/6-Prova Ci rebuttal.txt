@@ -1,0 +1,7 @@
+const rebuttalRules = {
+
+rebuttal_rules: [
+
+          'a rebuttal that' ,
+          'rebuttal is' ,
+],};

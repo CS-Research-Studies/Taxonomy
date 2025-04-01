@@ -1,0 +1,10 @@
+const control modelRules = {
+
+control model_rules: [
+
+          'optimal control model' ,
+          'control model complexity' ,
+          'control model targeting' ,
+          'the control model of' ,
+          'access control model that' ,
+],};

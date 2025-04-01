@@ -1,0 +1,13 @@
+<reference-count> - identificador da referencia dentro do arquivo
+<abstract> - resumo 
+<title> - titulo 
+
+</license> - licenciamento para acesso aberto?
+
+<link> <URL> - link para o pdf
+
+<language>en</language> - idioma
+
+<subject> - lista de assuntos verificar se bate com a lista de areas da acm
+
+
