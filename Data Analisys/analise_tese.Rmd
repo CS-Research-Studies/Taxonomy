@@ -1,0 +1,681 @@
+---
+title: "Análise de Dados"
+author: "Alessander Osorio"
+date: "07/09/2023"
+output:
+  
+  pdf_document: default
+  latex_document: default
+  html_document: default
+  word_document: default
+---
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, comment=NA)
+#options(encoding = 'UTF-8')
+options(digits=2) 
+options(OutDec = ",")
+
+
+```
+
+
+```{r echo=FALSE}
+library(simputation)
+library(dplyr)
+library(tidyr)
+library("ggthemes")
+library(knitr)
+library(stringi)
+library(ggplot2)
+
+#Executar o gui do editor de graficos do pacote
+#Rodar no terminal
+library("esquisse")
+#esquisser(dados)
+
+
+```
+
+```{r}
+# funcao para sumarizar uma variável e imprimir a tabela
+
+sumariza <- function(x_var, x_cap, x_tst)
+{
+    #Cria um dataframe auxiliar para sumarizar e ajusta o nome da coluna
+    x_dy <- dados[x_var]
+    colnames(x_dy) = c("resp")
+
+    #calcula os fatores da variavel
+    x_dy$resp <- factor( x_dy$resp )  
+    
+    #Cria a variavel de contagem n para os fatores 
+    x_dy <- x_dy %>% 
+        count(resp, .drop = FALSE)  
+    
+    #Cria a Variável percentual de a cordo com n e o número de observacoes n
+    x_dy <- x_dy %>% 
+    mutate(per= round(  (n*100)/x_n, digits = 1)  )
+    
+    
+    colnames(x_dy) = x_tst
+
+    
+    print(kable(x_dy, caption = x_cap))
+    
+}
+
+```
+
+```{r}
+# Abertura do arquivo de dados
+#dados <- read.csv("dados200723.csv", header=TRUE, sep=";")
+dados <- read.csv("dados160424.csv", header=TRUE, sep=";")
+dados_area<-read.csv("areas.csv", header=TRUE, sep=";")
+
+# numero total de observacoes
+x_n = count(dados)$n
+df_tot_ini <- dados %>%
+  group_by(dados$flag_aceite) %>%
+  summarise(
+    contagem_total = n(),                                  # Contagem total do descritor
+    per_descri = (contagem_total / count(dados)$n)*100 ,    # percentual total
+  )
+x_n_nao <- df_tot_ini$contagem_total[1]
+x_n_sim <- df_tot_ini$contagem_total[2]
+
+x_p_nao <- df_tot_ini$per_descri[1]
+x_p_sim <- df_tot_ini$per_descri[2]
+
+#numero total de artigos
+df_temp <- dados %>%
+  distinct(artigo)
+x_n_artigos <- nrow(df_temp)
+
+
+
+#numero de periodicos
+df_temp <- dados %>%
+  distinct(periodico)
+x_n_periodicos <- nrow(df_temp)
+
+# numero de categorias
+df_temp <- dados %>%
+  distinct(categoria)
+x_n_categ <- nrow(df_temp)
+
+# numero de descritores
+df_temp <- dados %>%
+  distinct(descritor)
+x_n_descri <- nrow(df_temp)
+
+
+```
+## Sumarizações iniciais
+
+A presente análise diz respeito aos dados oriundos do processo de validação da taxonomia proposta segundo a ontologia dela derivada. Tal ontologia, composta por `r x_n_descri` descritores divididos em `r x_n_categ` categorias, foi pesquisada no texto de `r x_n_artigos` artigos de `r x_n_periodicos` periódicos da ACM, totalizando `r x_n` observações. Estas foram submetidas ao algorítimo semisupervisionado de classificação k-nn para verificar sua adequação aos conceitos referentes a cada descritor levantados pela revisão sistemática de literatura. 
+
+Ao final, foram considerados aceitos como dentro do contexto do conceito a que se refere, `r x_n_sim` observações representando `r x_p_sim`% do total. Em contraposição, dentro dos mesmos padrões, `r x_n_nao` observações não foram aceitas, as quais representam `r x_p_nao`% do total, conforme a Tabela 1.
+
+As Tabelas 2 e 3, mostram os totais de ocorrências por Categoria e Descritor respectivamente. Note que dado o número total de observações, alguns descritores percentualmente apresentam valores não passíveis de representação matemática com o número de casas decimais utilizadas. Todavia não é possível desconsiderar tais valores pois estes compõem o total da categoria
+
+
+A variável de desfecho analisada é de natureza categorica, tendo o valor "Sim" para os aceitos, e "Não" para os não aceitos. Os valores apresentados aqui, representam a contagem de cada uma delas individualizada. As categorias e seus descritores serão analisados individualmente sem procurar estabelecer uma relação entre elas. Os histogramas por Categoria e Descritor mostram que os dados não seguem a distrbuição normal, sendo o teste do Qui-Quadrado o recomentado para verificação estatística dos valores desta análise. 
+
+```{r echo = FALSE , results='asis'  }
+
+# sumariza os totais preliminarmente
+sumariza("flag_aceite", "Totais Gerais Aceite",  c( 'Aceite','n','%'))
+sumariza("categoria", "Totais por Categoria dos Descritores",  c( 'Categoria','n','%'))
+sumariza("descritor","Totais por Descritores ", c( 'Descritor','n','%'))
+
+```
+
+```{r}
+#png('hist_descritor.png',res = 300, width = 2400, height = 1200)
+# Cria data frames para verificar a natureza dos dados 
+df_desc <- (as.data.frame(table(dados$descritor)))
+hist(df_desc$Freq, breaks =  nrow(df_desc), col = blues9, main = "Histograma segundo ocorrências por Descritor") 
+#dev.off()
+
+
+```
+
+```{r}
+#png('hist_categoria.png',res = 300, width = 2400, height = 1200)
+df_cate <- as.data.frame(table(dados$categoria) )
+hist(df_cate$Freq, breaks = nrow(df_cate), col = blues9, main = "Histograma segundo ocorrências por Categoria")
+#dev.off()
+```
+
+
+
+
+
+## Teste Global dos aceitos/não aceitos
+
+Esta seção mostra a aplicação dos testes estatísticos Qui-Quadrado e Teste de Proporcionalidade para toda a população das observações. O p-valor encontrado em ambos (0.0000000000000001) é inferior a 0,01 (p<0,01), o que rejeita a Hipótese Nula e aceita a Hipótese Alternativa para os dados analisados. Individualmente foi aplicado para cada categoria obtendo-se resultado semelhante. 
+
+```{r echo=FALSE}
+# Crie uma tabela de frequência para a variável 'flag_aceite'
+tabela_contingencia <- table(dados$flag_aceite)
+
+# teste Qui-quadrado
+resultado_teste_qi_quadrado <- chisq.test(tabela_contingencia)
+x_pv_qui = resultado_teste_qi_quadrado$p.value
+
+# resultado do teste do Qui
+#print(resultado_teste_qi_quadrado)
+resultado_teste_qi_quadrado
+
+table(dados$flag_aceite)
+
+# aplica o teste da proporcionalidade
+#resultato_proporc <-prop.test(table(dados$flag_aceite))
+#x_pv_pro <- resultato_proporc$p.value
+
+# resultado do teste de proporcionalidade
+#print(resultato_proporc)
+#resultato_proporc
+
+```
+
+
+```{r}
+# Dividir os dados em uma lista de data frames para cada categoria
+dados_por_categoria <- split(dados, dados$categoria)
+
+# Definir uma função para realizar o teste Qui-quadrado e armazenar os resultados
+realizar_teste_qi_quadrado <- function(df) {
+  tabela_contingencia <- table(df$flag_aceite)
+    resultado <- chisq.test(tabela_contingencia)
+    return(resultado)
+}
+
+# Executar o teste Qui-quadrado para cada categoria individualmente usando lapply
+resultados_por_categoria <- lapply(dados_por_categoria, realizar_teste_qi_quadrado)
+
+# Visualizar os resultados para cada categoria
+nomes_categorias <- names(resultados_por_categoria)
+for (i in seq_along(resultados_por_categoria)) {
+  cat_nome <- paste("Categoria:", nomes_categorias[i])
+  cat_resultado <- paste("qui-quadrado p-valor:", as.character( format(round(resultados_por_categoria[[i]]$p.value, digits = 5), scientific = FALSE )) ) 
+  print(paste(cat_nome, cat_resultado))
+
+    
+  
+}
+```
+
+## Teste Individual dos aceitos/não aceitos e descritor individualmente
+
+```{r}
+# Dividir os dados em uma lista de data frames para cada combinação de 'categoria' e 'descritor'
+dados_por_combinacao <- split(dados,  dados$descritor)
+
+# Definir uma função para realizar o teste Qui-quadrado e armazenar os resultados
+realizar_teste_qi_quadrado <- function(df) {
+  tabela_contingencia <- table(df$flag_aceite)
+  # Testar se tem ocorrências minimas para fazer o teste 
+  if (is.na(nrow(tabela_contingencia) > 1 && ncol(tabela_contingencia) > 1) ) {
+    resultado <- chisq.test(tabela_contingencia)
+    return(resultado)
+  } else {
+    return('Sem ocorrência de uma das categorias')
+  }
+}
+
+# Executar o teste Qui-quadrado para cada combinação de 'categoria' e 'descritor' usando lapply
+resultados_por_combinacao <- lapply(dados_por_combinacao, realizar_teste_qi_quadrado)
+
+# Visualizar os resultados para cada combinação
+nomes_combinacoes <- names(resultados_por_combinacao)
+for (i in seq_along(resultados_por_combinacao)) {
+  cat_combinacao <- paste('Descritor',nomes_combinacoes[i])
+  cat_resultado <- resultados_por_combinacao[[i]]
+  if (cat_resultado[1] == 'Sem ocorrência de uma das categorias' ) {
+    cat_resultado <- paste("qui-quadrado p-valor:", cat_resultado)
+    } else {
+    cat_resultado <- paste("qui-quadrado p-valor:", as.character( format(round(resultados_por_combinacao[[i]]$p.value, digits = 5), scientific = FALSE )) )      
+  }  
+  print(paste(cat_combinacao, cat_resultado))
+}
+```
+
+
+
+## Resultados por descritores da ontologia
+
+Os resultados expressos na tabela abaixo representam o número de ocorrências obtidas para cada descritor da ontologia de maneira individual, sem qualquer tipo de associação entre eles. Os números também correspondem ao total de aceitos (ordenação da tabela juntamente com a categoria) e não aceitos na classificação pelo algorítimo k-nn. Os números são puros e os percentuais foram calculados com base no total do descritor (%Desc) e ao total geral de ocorrências (%Tot). Novamente note que alguns percentuais não puderam ser representados matemáticamente com o número de casas decimais utilizados nesta análise. Reitera-se que tais resultados não foram descartados por comporem os resultados totais por categoria do descritor. 
+
+
+O destaque da tabela cabe à última coluna - Pred. - Predominância do resultado. Ela expressa a comparação dos resultados aceitos e não aceitos. Se um é maior que o outro. Se o 'n' de aceitos é maior que o de não aceitos na coluna será mostrado o conteúdo 'S' caso contrário 'N'. Analisando esta coluna pode-se ver que os descritores 'verticals', 'controled model' e 'doctrinal' os quais, além da baixa ocorrência, não tiveram nenhum caso de classificação positiva. Indicando sua não utilização dentro da pesquisa em computação para a população estudada. 
+
+Ainda analisando a coluna predominãncia, pode-se perceber que quase a totalide, daqueles descritores onde predominam os não aceitos na classificação, os percentuais em relação ao total de ocorrências são inferiores a 1% (0,6% para ser exato). Excetuando os descritores 'modeling' (4,7%), 'concept'(2,1%) e 'effectiveness' (2,07%). Analisando individualmente estes casos nota-se que as diferenças entre aceitos e não aceitos, são relativamente pequenas, quase inexistentes não representando mais que 1,5% em relação ao total do descritor. 
+
+
+```{r echo = FALSE , results='asis'  }
+# Criar um novo dataframe contendo as informações desejadas
+df_tot_descri <- dados %>%
+  group_by(categoria, descritor) %>%
+  summarise(
+    contagem_total = n(),                                  # Contagem total do descritor
+    per_descri = (contagem_total / count(dados)$n)*100 ,    # percentual total
+    total_sim = sum(flag_aceite == "Sim"),                 # Total de "sim"
+    percentual_sim = (total_sim / contagem_total)*100 ,    # Percentual de "sim" em relacao ao total da categoria
+    percen_sim_tot = (total_sim / count(dados)$n)*100 ,    # Percentual de "sim" em relacao ao total geral
+    total_nao = sum(flag_aceite == "Não"),                 # Total de "não"
+    percentual_nao = (total_nao / contagem_total)*100,     # Percentual de "não" em relacao ao total da categoria
+    percen_nao_tot = (total_nao / count(dados)$n)*100,    # Percentual de "não" em relacao ao total geral
+    predominancia = (if (total_nao> total_sim) {'N'}else {'S'})   #predominancia do resultado
+    
+  )%>%
+  arrange(categoria, desc(total_sim))%>%   # Ordenar o dataframe pela contagem_total em ordem decrescente
+ungroup() %>% # Desagrupar o dataframe
+add_row(descritor = "Total",
+          contagem_total = sum(.$contagem_total),
+          per_descri = sum(.$per_descri) ,
+          total_sim = sum(.$total_sim),
+          percen_sim_tot = (total_sim /contagem_total)*100,
+          total_nao = sum(.$total_nao),
+          percen_nao_tot = (total_nao /contagem_total)*100 ) # Adicionar linha totalizadora ao final
+
+colnames(df_tot_descri) = c('Categoria', 'Descritor','n','%','Total Sim','%Desc.', '%Tot.','Total Não','%Desc.','%Tot.', 'Pred.')
+
+cat("\\tiny")
+
+# Visualizar o novo dataframe
+print(kable(df_tot_descri, caption = "Aceite por descritores da ontologia"))
+
+cat("\\normalsize")
+
+```
+
+
+## Resultados por categoria da ontologia
+
+Para os resultados por categoria da ontologia não considerou-se o 'n' puro, uma vez que as categorias possuem, internamente, números distintos de descritores. Isto faria com que uma categoria com maior número de descritores, logicamente, tivesse maior número de ocorrências e por consequencia valores enviezados em suas contagens. Nesta parte da análise foram considerados os número de descritores por categoria, sendo o número de ocorrências dividido por tais valores componto assim um valor para 'n' normalizado ou a média interna por categoria. 
+
+Exemplificando, percebe-se que a categoria com maior ocorrências brutas é 'Método' com um total de 39.429 ocorrências e 28 descritores. Ao se normalizar este valor obtém-se um 'n' normalizado de 1408. Comparando-se com a categoria 'Natureza', esta possuir apenas 2 descritores resultando em um 'n' de 3690. Note que o objetivo desta análise não é estabelecer uma comparação entre as categorias, tal ação é apenas para exemplificar e justificar a forma como os números foram analisados.
+
+
+Dito isto, os demais dados da tabela foram calculados levando-se em consideração o 'n' normalizado ou média por categoria. Nesta tabela não foi calculada a predominância dos valores, uma vez que, exceto a categoria 'Propósito paradigma', todas as demais possuem predominância positiva. A categoria em questão possui uma diferença entre os valores para aceitor e não aceitos percentualmente nula inferior a 0,01% ou 19 ocorrências. 
+
+```{r echo = FALSE , results='asis'  }
+# Criar um novo dataframe contendo as informações desejadas
+df_tot_categ <- dados %>%
+  group_by(categoria) %>%
+  summarise(
+    nro_descri = max(n_desc),                                # Numero de descritores na categoria
+    contagem_total = n(),                                    # Contagem total do descritor
+    per_descri = (contagem_total / count(dados)$n)*100,      # percentual total
+    contagem_norma = contagem_total/nro_descri,              # contagem normalizada pelo numero de descritores na categoria
+    total_sim = trunc(sum(flag_aceite == "Sim")/nro_descri), # Total de "sim" normalizado
+    percentual_sim = (total_sim / contagem_total)*100 ,      # Percentual de "sim" em relacao ao total da categoria
+    percen_sim_tot = (total_sim / count(dados)$n)*100 ,      # Percentual de "sim" em relacao ao total geral
+    total_nao = trunc(sum(flag_aceite == "Não")/nro_descri), # Total de "não"
+    percentual_nao = (total_nao / contagem_total)*100,       # Percentual de "não" em relacao ao total da categoria
+    percen_nao_tot = (total_nao / count(dados)$n)*100        # Percentual de "não" em relacao ao total geral
+    )%>%
+  arrange(substr(categoria,1,2))%>%   # Ordenar o dataframe pela contagem_total em ordem decrescente
+ungroup() %>% # Desagrupar o dataframe
+add_row(categoria = "Total",
+          nro_descri = sum(.$nro_descri) , 
+          contagem_total = sum(.$contagem_total),
+          per_descri = sum(.$per_descri) ,
+          contagem_norma = contagem_total/nro_descri,      # contagem normalizada pelo numero de descritores na categoria
+          total_sim = sum(.$total_sim),
+          percen_sim_tot = (total_sim /contagem_total)*100,
+          total_nao = sum(.$total_nao),
+          percen_nao_tot = (total_nao /contagem_total)*100 ) # Adicionar linha totalizadora ao final
+
+
+colnames(df_tot_categ) = c('Categoria', 'N.Desc.','n', '%' ,'n.Norm.','Total Sim','%SCat.', '%STot.','Total Não','%NCat.','%NTot.')
+
+cat("\\scriptsize")
+
+# Visualizar o novo dataframe
+print(kable(df_tot_categ, col_width = c('2cm','5cm'), caption = 'Aceite por categorias e descritores da ontologia' ))
+
+cat("\\normalsize")
+
+# Cria o gráfico como os dados do dataframe desconsiderando a ultima linha 
+# Excluir a última linha do dataframe df_tot_categ
+df_temp <- head(df_tot_categ, -1)
+
+# Derreter o dataframe para transformar as colunas "Total Sim" e "Total Não" em uma única coluna
+dados_derretidos <- df_temp %>%
+  pivot_longer(cols = c("Total Sim", "Total Não"), names_to = "Tipo", values_to = "Valor")
+dados_derretidos <-arrange(dados_derretidos, desc(Categoria))
+
+# Criar o gráfico de barras com rótulos na horizontal
+grafico_barras_horizontais <- ggplot(dados_derretidos,  aes(x = Valor, y = Categoria , fill = Tipo  ) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = Valor  ),size=2.5, position = position_dodge(width = 1), hjust = -0.2) + #label dos valores nas colunas
+  labs(x = "Média de Ocorrências", y = "Categoria", fill = "Tipo") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(angle = 0, hjust = 1)) + # Rótulos na horizontal
+  xlim(0,max(dados_derretidos$Valor)+250)+
+  labs(title ='Médias de Ocorrências por Categoria'  ) 
+
+
+# Exibir o gráfico geral
+print(grafico_barras_horizontais)
+
+#salva o arquivo com o gráfico
+x_file <-paste("ocorrencias_categorias.PNG")
+ggsave(file=x_file, width=10, height=8, dpi=600)
+
+ #pula pagina
+  cat("\\pagebreak")
+
+```
+
+
+
+
+## Resultados individuais por categoria
+
+A seguir, as categorias são sumarizadas individualmente e seus destaques apresentados.
+
+```{r echo = FALSE , results='asis'  }
+
+df_tot_categ <- dados %>%
+  group_by(categoria,descritor) %>%
+  summarise(
+    nro_descri = max(n_desc),                                # Numero de descritores na categoria
+    contagem_total = n(),                                    # Contagem total do descritor
+    per_descri = (contagem_total / count(dados)$n)*100,      # percentual total
+    contagem_norma = contagem_total/nro_descri,              # contagem normalizada pelo numero de descritores na categoria
+    total_sim = trunc(sum(flag_aceite == "Sim")), # Total de "sim" normalizado
+    percentual_sim = round((total_sim / n())*100) ,      # Percentual de "sim" em relacao ao total da categoria
+    percen_sim_tot = (total_sim / count(dados)$n)*100 ,      # Percentual de "sim" em relacao ao total geral
+    total_nao = trunc(sum(flag_aceite == "Não")), # Total de "não"
+    percentual_nao = round((total_nao / n())*100),       # Percentual de "não" em relacao ao total da categoria
+    percen_nao_tot = (total_nao / count(dados)$n)*100        # Percentual de "não" em relacao ao total geral
+    )
+
+
+colnames(df_tot_categ) = c('Categoria', 'Descritor', 'N.Desc.','n', '%' ,'n.Norm.','Total Sim','Sim', '%STot.','Total Não','Não','%NTot.')
+
+# Derreter o dataframe para transformar as colunas "Total Sim" e "Total Não" em uma única coluna
+dados_derretidos <- df_tot_categ %>%
+  pivot_longer(cols = c("Sim", "Não"), names_to = "Tipo", values_to = "Valor") %>%
+   filter(Valor != 0)
+
+# Lista de categorias únicas no dataframe
+categorias_unicas <- unique(dados_derretidos$Categoria)
+
+# Loop for para percorrer as categorias
+for (categoria in categorias_unicas) {
+  # Filtrar o dataframe para a categoria atual
+  df_grafico_temp <- dados_derretidos %>% filter(Categoria == categoria)
+  #print(kable(df_grafico_temp))  
+ 
+  # Criar o gráfico de barras com rótulos na horizontal
+  grafico_barras_horizontais <- ggplot(df_grafico_temp, aes(x = Valor, y = Descritor , fill = Tipo  )) +
+    geom_col( position = 'stack') +
+    geom_text(aes(label = Valor),size=2.5, position = position_stack(vjust = 0.5)) + #label dos valores nas colunas
+    labs(x = "Contagem", y = "Categoria", fill = "Tipo") +
+    theme_minimal() +
+    theme(axis.text.y = element_text(angle = 0, hjust = 1)) + # Rótulos na horizontal
+    theme(axis.text.x = element_text(angle = 0, hjust = 1)) + # Rótulos na horizontal
+    theme(element_line(size =1) )+
+    labs(title = 'Percentual Interno de Ocorrências por Categoria', subtitle =  categoria, x='%', y='Descritor da Categoria' ) 
+  
+    
+  #salva o arquivo com o gráfico
+  x_file <-paste((substr(categoria,1,10)),".PNG")
+  ggsave(file=x_file, width=10, height=8, dpi=600)
+
+  #imprime a tabela antes do grafico
+  df_temp <- df_tot_categ %>%
+     filter(Categoria == categoria)
+
+  # Adiciona o texto com as considerações
+  cat("  \\\n \\textbf{Categoria - ", categoria, "}")
+  cat("  \\\n")
+  # Maior numero de ocorrências
+  x_max <- which.max(df_temp$n.Norm.)
+  x_min <- which.min(df_temp$n.Norm.)
+
+  cat("  \\\n Maior número de ocorrências descritor: ", df_temp$Descritor[ x_max], ", com média ", df_temp$n.Norm.[ x_max] , 
+      ". Com percentual de aceitação ", df_temp$`%STot.`[ x_max], "% e não aceitação de ",  df_temp$`%NTot.`[ x_max], "%.")
+  cat("  \\\n Menor número de ocorrências descritor: ", df_temp$Descritor[ x_min], ", com média ", df_temp$n.Norm.[ x_min],
+      ". Com percentual de aceitação ", df_temp$`%STot.`[ x_min], "% e não aceitação de ",  df_temp$`%NTot.`[ x_min], "%.")
+
+    # Maior numero de aceitacao/ n.aceitação
+  x_max <- which.max(df_temp$`%STot.`)
+  x_min <- which.min(df_temp$`%NTot.`)
+
+  cat("  \\\n Maior percentual de aceitação sobre o total, descritor: ", df_temp$Descritor[ x_max], ", com média ", df_temp$n.Norm.[ x_max] , 
+      ". Com percentual de aceitação ", df_temp$`%STot.`[ x_max], "% e não aceitação de ",  df_temp$`%NTot.`[ x_max], "%.")
+  cat("  \\\n Menor percentual de aceitação sobre o total, descritor: ", df_temp$Descritor[ x_min], ", com média ", df_temp$n.Norm.[ x_min],
+      ". Com percentual de aceitação ", df_temp$`%STot.`[ x_min], "% e não aceitação de ",  df_temp$`%NTot.`[ x_min], "%.")
+
+
+    
+  #remove as colunas Categoria e numero de descritores
+  df_temp$Categoria <- NULL
+  df_temp$N.Desc. <- NULL
+  
+  # imprime a tabela com os valores do grafico
+
+    cat("\\scriptsize")
+  print(kable(df_temp, caption = paste('Distribuição dos reusltados individuais da categoria: ', categoria)) )
+  cat("\\normalsize")
+
+  # Exibir o gráfico geral
+  print(grafico_barras_horizontais)  
+  
+  #pula pagina
+  cat("\\pagebreak")
+
+  
+}
+
+```
+
+
+
+## Tabela sumarizada por Periódico das publicacões 
+No total foram pesquisados `r x_n_artigos` em `r x_n_periodicos` periódicos da ACM. A tabela abaixo mostra os totais individualizados por periódico ordenados pelo total de ocorrências. Note que a média de ocorrências não esta ligada ao número de artigos. A maior média é do Periódico ACM Trans. Softw. Eng. Methodol. com 146,7 ocorrências em 19 artigos!
+
+```{r echo = FALSE , results='asis'  }
+
+# Criar um novo dataframe contendo as informações desejadas
+df_tot_periodico <- dados %>%
+  group_by(periodico) %>%
+  summarise(
+    contagem_artigos=  n_distinct(artigo), #contagem de artigos
+    contagem_total = n(),                                  # Contagem total do descritor
+    ratio = contagem_total/contagem_artigos,
+    per_descri = (contagem_total / count(dados)$n)*100,    # percentual total
+    total_sim = sum(flag_aceite == "Sim"),                 # Total de "sim"
+    percentual_sim = (total_sim / contagem_total)*100 ,    # Percentual de "sim" em relacao ao total da categoria
+    percen_sim_tot = (total_sim / count(dados)$n)*100 ,    # Percentual de "sim" em relacao ao total geral
+    total_nao = sum(flag_aceite == "Não"),                 # Total de "não"
+    percentual_nao = (total_nao / contagem_total)*100,     # Percentual de "não" em relacao ao total da categoria
+    percen_nao_tot = (total_nao / count(dados)$n)*100      # Percentual de "não" em relacao ao total geral
+  )%>%
+  arrange(desc(contagem_total))%>%   # Ordenar o dataframe pela contagem_total em ordem decrescente
+ungroup() %>% # Desagrupar o dataframe
+add_row(periodico = "Total",
+          contagem_artigos = sum(.$contagem_artigos),
+          contagem_total = sum(.$contagem_total),
+          per_descri = sum(.$per_descri) ,
+          total_sim = sum(.$total_sim),
+          percen_sim_tot = (total_sim /contagem_total)*100,
+          total_nao = sum(.$total_nao),
+          percen_nao_tot = (total_nao /contagem_total)*100 ) # Adicionar linha totalizadora ao final
+
+colnames(df_tot_periodico) = c('Periódico', 'Artigos', 'n', 'Média', '%','Total Sim','%Per.', '%Tot.','Total Não','%Per.','%Tot.')
+
+cat("\\tiny")
+
+# Visualizar o novo dataframe
+print(kable(df_tot_periodico, caption = 'Distribuição dos resultados por periódico da ACM.' ))
+
+
+cat("\\normalsize")
+
+```
+
+## Tabela Sumarizada por area dos periódicos segundo classificação da SCOPUS para a Ciência
+
+Cada observação na base de dados contém informações a respeito do artigo a que se refere. Dentre tais informações está a variável área, a qual contém as áreas as quais fazem parte do escopo de publicação do periódico. O conteúdo se refere ao periódico e não ao artigo conforme mostra a tabela abaixo. 
+
+Nesta tabela é possível ver que mais de uma área estão agrupadas por linha, e, uma mesma área está presente em mais de uma linha. Isto se deve ao fato de, como já descrito, a variável areas se referir ao periódico e não ao artigo. 
+
+Tal informação é categorizada segundo a classificação ASJC (All Science Journal Classification Codes - https://scientificresearch.in/asjc-all-science-journal-classification-codes/) que é organizada e mantida pela SCOPUS/Elsevier (https://www.scopus.com/home.uri)  e compreende uma lista das grandes areas da ciência (da: vida, física, saúde, social e humanas) divididas em 333 sub areas não consideradas nesta análise.
+
+```{r echo = FALSE , results='asis'  }
+
+
+# Criar um novo dataframe contendo as informações desejadas
+df_tot_area<- dados %>%
+  group_by(areas) %>%
+  summarise(
+    contagem_total = n(),                                  # Contagem total do descritor
+    per_descri = (contagem_total / count(dados)$n)*100,    # percentual total
+    total_sim = sum(flag_aceite == "Sim"),                 # Total de "sim"
+    percentual_sim = (total_sim / contagem_total)*100 ,    # Percentual de "sim" em relacao ao total da areas
+    percen_sim_tot = (total_sim / count(dados)$n)*100 ,    # Percentual de "sim" em relacao ao total geral
+    total_nao = sum(flag_aceite == "Não"),                 # Total de "não"
+    percentual_nao = (total_nao / contagem_total)*100,     # Percentual de "não" em relacao ao total da areas
+    percen_nao_tot = (total_nao / count(dados)$n)*100      # Percentual de "não" em relacao ao total geral
+  )%>%
+  arrange(desc(contagem_total))%>%   # Ordenar o dataframe pela contagem_total em ordem decrescente
+ungroup() %>% # Desagrupar o dataframe
+add_row(areas = "Total",
+          contagem_total = sum(.$contagem_total),
+          per_descri = sum(.$per_descri) ,
+          total_sim = sum(.$total_sim),
+          percen_sim_tot = (total_sim /contagem_total)*100,
+          total_nao = sum(.$total_nao),
+          percen_nao_tot = (total_nao /contagem_total)*100 ) # Adicionar linha totalizadora ao final
+
+colnames(df_tot_area) = c('Areas','n','%','Total Sim','%Cat.', '%Tot.','Total Não','%Cat.','%Tot.')
+
+
+cat("\\tiny")
+# Visualizar o novo dataframe
+print(kable(df_tot_area, caption = 'Distribuição segundo o agrupamento de áreas dos periódicos'))
+cat("\\normalsize")
+```
+
+
+
+Na tabela abaixo, o conteúdo da variável areas foi desmembrado do agrupamento. Cada linha representa a contagem de artigos em cada area respectivamente. Note que o total não é compatível com o número de artigos pesquisados, isto se deve de que os periódicos são categorizados em mais de uma área e há uma sobreposição na contagem. 
+
+```{r echo = FALSE , results='asis'  }
+
+
+# Separar os valores da variável "areas" em linhas separadas
+dados_separados <- dados %>%
+  separate_rows(areas, sep = ",\\s*") %>%
+  filter(areas != "")
+
+# Realizar a sumarização da contagem de artigos em cada área
+sumarizacao <- dados_separados %>%
+  group_by(areas) %>%
+  summarise(contagem_artigos = n_distinct(artigo))%>% 
+ungroup() %>% # Desagrupar o dataframe
+add_row(areas = "Total",
+          contagem_artigos = sum(.$contagem_artigos)        )
+
+
+# Visualizar o dataframe resultante com a contagem de artigos em cada área
+df_temp<-sumarizacao
+colnames(df_temp) = c('Areas','n')
+print(kable(df_temp, caption = 'Distribuição dos resultados por áreas segundo SCOPUS. '))
+
+```
+
+
+
+Na tabela abaixo foi realizado um exercício para relacionar as classificações de área ASJC, ACM-CCS e Grandes áreas ca computação segundo a Sociedade Brasileira de Computação (SBC). Como pode ser visto há uma equivalência entre elas, o que já era esperado uma vez que as três versam sobre a mesma área da ciência. 
+
+```{r echo = FALSE , results='asis'  }
+
+#imprime a tabela com a relacao entre as 3 classificacoes de areas
+cat("\\tiny")
+df_temp <- dados_area
+df_temp$SCOPUS_COD = NULL ## remove a variável codigo scocups
+colnames(df_temp) = c('Classif. ACM','Classif. SCOPUS', 'Classif. SBC')
+print(kable(df_temp, caption = 'Associação de equivalência das classificações da Cinência da Computação segundo ACM, SCOPUS e SBC.'))
+cat("\\normalsize")
+
+```
+
+Com base na tabela de equivalência de áreas (ASJC, ACM-CCS e SBC), foi feita a relação entre tal tabela e as áreas desmembradas obtidas nas observações dos dados do presente trabalho, uma vez que estes estão distribuidos segundo a classificação da SCOPUS. Note que no que tange a computação, todas as áreas foram contempladas nos resultados. Ainda é possível notar que o escopo dos periódicos pesquisados não dizem respeito apenas a computação, mas também a outras áreas do conhecimento. Conforme mostra a tabela abaixo.  
+
+
+```{r echo = FALSE , results='asis'  }
+
+# Use a função merge() para combinar os data frames com base na variável "area"
+merged_df <- merge(sumarizacao, dados_area, by = "areas", all = TRUE)
+
+# O argumento "by" especifica a coluna pela qual os data frames serão mesclados.
+# O argumento "all" = TRUE inclui todos os valores das duas colunas "valor_df1" e "valor_df2".
+
+# O resultado será um novo data frame combinando as duas fontes de dados com base na coluna "area".
+cat("\\tiny")
+merged_df$SCOPUS_COD = NULL ## remove a variável codigo scocups
+colnames(merged_df) = c('Área (SCOPUS)','n', 'Classif. ACM','Classif. SBC' )
+
+print(kable(merged_df, caption = 'Contagem de artigos por área e associação de áreas segundo SCOPUS, ACM e SBC' ))
+cat("\\normalsize")
+
+```
+
+```{r echo = FALSE , results='asis'  }
+
+# Separar os valores da variável "areas" em linhas separadas
+dados_lt <- dados %>%
+  separate_rows(aceite, sep = ",\\s*") %>%
+  filter(areas != "")
+
+
+# Realizar a sumarização da contagem de artigos em cada área
+sumarizacao <- dados_lt %>%
+  group_by(categoria) %>%
+  summarise(
+             contagem_regras = n_distinct(aceite),
+             total_sim = sum(flag_aceite == "Sim"),
+             total_nao = sum(flag_aceite == "Não"),
+             simnao_ratio = total_sim/total_nao,
+             taxa_classificacao = sum(flag_aceite == "Sim")/n_distinct(aceite)
+           )%>% 
+ungroup() %>% # Desagrupar o dataframe
+add_row(categoria = "Total",
+          contagem_regras = sum(.$contagem_regras),
+           total_sim = sum(.$total_sim),
+           total_nao = sum(.$total_nao),
+           simnao_ratio = sum(.$total_sim)/ sum(.$total_nao),
+           taxa_classificacao = sum(.$total_sim)/sum(.$contagem_regras),
+        
+        )
+n_lt =  n_distinct(dados_lt$aceite)
+
+x_perlt = n_distinct(dados_lt$aceite) * 100 / x_n
+
+
+```
+
+## A tabela de aprendizagem do K-nn 
+
+No total, a tabela de aprendizagem possui `r n_lt` entradas ao final da execução do algorítimo de classificação. O que corresponde a `r x_perlt`% do total de `r x_n` observações. A taxa de classificação média para cada regra da tabela de aprendizagem é de 22 observações com uma relação de aproximadamente 5 aceites para 1 descarte. 
+
+
+```{r echo = FALSE , results='asis'  }
+
+# Visualizar o dataframe resultante com a contagem de artigos em cada área
+cat("\\scriptsize")
+colnames(sumarizacao) = c('Categoria','n','Sim','Não','Taxa','Média')
+print(kable(sumarizacao, caption = 'Distribuição dos valores da Tabela de Aprendizagem do K-nn.'))
+cat("\\normalsize")
+
+```
+
+Fim
